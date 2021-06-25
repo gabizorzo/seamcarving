@@ -138,13 +138,12 @@ void seamcarve(int targetWidth)
             deltaY = deltaRy * deltaRy + deltaGy * deltaGy + deltaBy * deltaBy;
 
             energy[linha][coluna] = deltaX + deltaY;
-            printf("%d, ", energy[linha][coluna]);
+            printf("%8d, ", energy[linha][coluna] );
         }
-
         printf("\n");
     }
 
-        printf("\n");
+    printf("\n");
 
     RGB8(*ptr4)
     [source->width] = (RGB8(*)[source->width])source->img;
@@ -170,14 +169,14 @@ void seamcarve(int targetWidth)
                 //printf(" smallest: %d", smallest);   
                 energyPlus[linha][coluna] = energy[linha][coluna] + smallest;  
             }
-
-            printf("%d, ", energyPlus[linha][coluna]);
+            printf("%8d, ", energyPlus[linha][coluna] );
         }
-       printf("\n");
+        printf("\n");
     }
 
-   
-
+   // while qual coluna tem que tirar, tira vai pra proxima linha, qual ter que tirar, puxa
+    //arrasta o pixel da direita para a esquerda 
+    //
     // a partir daqui já estava no código
 
     RGB8(*ptr)
