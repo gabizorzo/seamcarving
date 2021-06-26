@@ -82,12 +82,31 @@ void seamcarve(int targetWidth)
     // Aplica o algoritmo e gera a saida em target->img...
     // RGB8 (*ptr1) = source;
     // RGB8 (*ptr2) = source;
+    static int firstTime = 0;
+
+    if(firstTime == 0){
+        RGB8(*ptrT)
+        [target->width] = (RGB8(*)[target->width])target->img;
+        RGB8(*ptrS)
+        [source->width] = (RGB8(*)[source->width])source->img;
+
+        for (int y = 0; y < source->height; y++)
+        {
+            for (int x = 0; x < source->width; x++)
+            {
+                ptrT[y][x].r = ptrS[y][x].r;
+                ptrT[y][x].g = ptrS[y][x].g;
+                ptrT[y][x].b = ptrS[y][x].b;
+            }
+        }
+        firstTime = 1;
+    }
 
     RGB8(*ptr3)
-    [source->width] = (RGB8(*)[source->width])source->img;
+    [target->width] = (RGB8(*)[target->width])target->img;
 
     // Matriz com a energia de cada pixel
-    int energy[source->height][source->width];
+    int energy[target->height][targetWidth];
     // Variação da energia em x
     int deltaRx;
     int deltaGx;
@@ -102,97 +121,164 @@ void seamcarve(int targetWidth)
     int deltaY;
 
     // Cálculo da energia
-    for (int linha = 0; linha < source->height; linha++)
+    for (int linha = 0; linha < target->height; linha++)
     {
-        for (int coluna = 0; coluna < source->width; coluna++)
+        for (int coluna = 0; coluna < targetWidth; coluna++)
         {
-            if (coluna == 0){
-                deltaRx = abs((int)(ptr3[linha][coluna+2].r - ptr3[linha][coluna+1].r));
-                deltaGx = abs((int)(ptr3[linha][coluna+2].g - ptr3[linha][coluna+1].g));
-                deltaBx = abs((int)(ptr3[linha][coluna+2].b - ptr3[linha][coluna+1].b));
-            } else if (coluna == source->width-1){
-                deltaRx = abs((int)(ptr3[linha][coluna-2].r - ptr3[linha][coluna-1].r));
-                deltaGx = abs((int)(ptr3[linha][coluna-2].g - ptr3[linha][coluna-1].g));
-                deltaBx = abs((int)(ptr3[linha][coluna-2].b - ptr3[linha][coluna-1].b));
-            } else {
-                deltaRx = abs((int)(ptr3[linha][coluna+1].r - ptr3[linha][coluna-1].r));
-                deltaGx = abs((int)(ptr3[linha][coluna+1].g - ptr3[linha][coluna-1].g));
-                deltaBx = abs((int)(ptr3[linha][coluna+1].b - ptr3[linha][coluna-1].b));
+            if (coluna == 0)
+            {
+                deltaRx = abs((int)(ptr3[linha][coluna + 2].r - ptr3[linha][coluna + 1].r));
+                deltaGx = abs((int)(ptr3[linha][coluna + 2].g - ptr3[linha][coluna + 1].g));
+                deltaBx = abs((int)(ptr3[linha][coluna + 2].b - ptr3[linha][coluna + 1].b));
+            }
+            else if (coluna == targetWidth - 1)
+            {
+                deltaRx = abs((int)(ptr3[linha][coluna - 2].r - ptr3[linha][coluna - 1].r));
+                deltaGx = abs((int)(ptr3[linha][coluna - 2].g - ptr3[linha][coluna - 1].g));
+                deltaBx = abs((int)(ptr3[linha][coluna - 2].b - ptr3[linha][coluna - 1].b));
+            }
+            else
+            {
+                deltaRx = abs((int)(ptr3[linha][coluna + 1].r - ptr3[linha][coluna - 1].r));
+                deltaGx = abs((int)(ptr3[linha][coluna + 1].g - ptr3[linha][coluna - 1].g));
+                deltaBx = abs((int)(ptr3[linha][coluna + 1].b - ptr3[linha][coluna - 1].b));
             }
 
-            if (linha == 0){
-                deltaRy = abs((int)(ptr3[linha+2][coluna].r - ptr3[linha+1][coluna].r));
-                deltaGy = abs((int)(ptr3[linha+2][coluna].g - ptr3[linha+1][coluna].g));
-                deltaBy = abs((int)(ptr3[linha+2][coluna].b - ptr3[linha+1][coluna].b));
-            } else if (linha == source->height-1){
-                deltaRy = abs((int)(ptr3[linha-2][coluna].r - ptr3[linha-1][coluna].r));
-                deltaGy = abs((int)(ptr3[linha-2][coluna].g - ptr3[linha-1][coluna].g));
-                deltaBy = abs((int)(ptr3[linha-2][coluna].b - ptr3[linha-1][coluna].b));
-            } else {
-                deltaRy = abs((int)(ptr3[linha+1][coluna].r - ptr3[linha-1][coluna].r));
-                deltaGy = abs((int)(ptr3[linha+1][coluna].g - ptr3[linha-1][coluna].g));
-                deltaBy = abs((int)(ptr3[linha+1][coluna].b - ptr3[linha-1][coluna].b));
+            if (linha == 0)
+            {
+                deltaRy = abs((int)(ptr3[linha + 2][coluna].r - ptr3[linha + 1][coluna].r));
+                deltaGy = abs((int)(ptr3[linha + 2][coluna].g - ptr3[linha + 1][coluna].g));
+                deltaBy = abs((int)(ptr3[linha + 2][coluna].b - ptr3[linha + 1][coluna].b));
             }
-            
+            else if (linha == target->height - 1)
+            {
+                deltaRy = abs((int)(ptr3[linha - 2][coluna].r - ptr3[linha - 1][coluna].r));
+                deltaGy = abs((int)(ptr3[linha - 2][coluna].g - ptr3[linha - 1][coluna].g));
+                deltaBy = abs((int)(ptr3[linha - 2][coluna].b - ptr3[linha - 1][coluna].b));
+            }
+            else
+            {
+                deltaRy = abs((int)(ptr3[linha + 1][coluna].r - ptr3[linha - 1][coluna].r));
+                deltaGy = abs((int)(ptr3[linha + 1][coluna].g - ptr3[linha - 1][coluna].g));
+                deltaBy = abs((int)(ptr3[linha + 1][coluna].b - ptr3[linha - 1][coluna].b));
+            }
+
             deltaX = deltaRx * deltaRx + deltaGx * deltaGx + deltaBx * deltaBx;
             deltaY = deltaRy * deltaRy + deltaGy * deltaGy + deltaBy * deltaBy;
 
             energy[linha][coluna] = deltaX + deltaY;
-            printf("%8d, ", energy[linha][coluna] );
         }
-        printf("\n");
     }
 
-    printf("\n");
-
-    RGB8(*ptr4)
-    [source->width] = (RGB8(*)[source->width])source->img;
+    // RGB8(*ptr4)
+    // [target->width] = (RGB8(*)[target->width])target->img;
 
     // Matriz com a energia acumulada
-    int energyPlus[source->height][source->width];
+    int energyPlus[target->height][targetWidth];
 
-     for (int linha = 0; linha < source->height; linha++)
+    for (int linha = 0; linha < target->height; linha++)
     {
-        for (int coluna = 0; coluna < source->width; coluna++)
+        for (int coluna = 0; coluna < targetWidth; coluna++)
         {
-            if(linha == 0){
+            if (linha == 0)
+            {
                 energyPlus[linha][coluna] = energy[linha][coluna];
-            } else {
-                int smallest= energyPlus[linha-1][coluna];
-
-                if(energyPlus[linha-1][coluna-1] < smallest && coluna > 0){
-                    smallest = energyPlus[linha-1][coluna-1];
-                }   
-                if(energyPlus[linha-1][coluna+1] < smallest && coluna < source->width -1){
-                    smallest = energyPlus[linha-1][coluna+1];
-                }   
-                //printf(" smallest: %d", smallest);   
-                energyPlus[linha][coluna] = energy[linha][coluna] + smallest;  
             }
-            printf("%8d, ", energyPlus[linha][coluna] );
+            else
+            {
+                int smallest = energyPlus[linha - 1][coluna];
+
+                if (energyPlus[linha - 1][coluna - 1] < smallest && coluna > 0)
+                {
+                    smallest = energyPlus[linha - 1][coluna - 1];
+                }
+                if (energyPlus[linha - 1][coluna + 1] < smallest && coluna < target->width - 1)
+                {
+                    smallest = energyPlus[linha - 1][coluna + 1];
+                }
+                //printf(" smallest: %d", smallest);
+                energyPlus[linha][coluna] = energy[linha][coluna] + smallest;
+            }
         }
-        printf("\n");
     }
 
-   // while qual coluna tem que tirar, tira vai pra proxima linha, qual ter que tirar, puxa
-    //arrasta o pixel da direita para a esquerda 
-    //
+    // Variáveis para encontrar o menor caminho
+    int smallestPathValue[target->height]; // Energias do menor caminho
+    int smallestPath[target->height];      // Posições da coluna no menor caminho
+    int smallest;                          // Menor valor
+    int smallestPosition = 0;              // Posição do menor valor
+
+    printf("vou entrar: %d %d\n", targetWidth, targetW);
+    // Encontra o menor caminho para ser removido
+    for (int linha = target->height - 1; linha >= 0; linha--)
+    {
+        if (linha == target->height - 1)
+        {
+            for (int coluna = 0; coluna < targetW; coluna++)
+            {
+                if (coluna == 0)
+                {
+                    smallest = energyPlus[linha][coluna];
+                }
+                else if (energyPlus[linha][coluna] < smallest)
+                {
+                    smallest = energyPlus[linha][coluna];
+                    smallestPosition = coluna;
+                }
+            }
+            smallestPathValue[linha] = smallest;
+            smallestPath[linha] = smallestPosition;
+        }
+        else
+        {
+            smallest = energyPlus[linha][smallestPosition];
+
+            if (energyPlus[linha][smallestPosition - 1] < smallest && smallestPosition > 0)
+            {
+                smallest = energyPlus[linha][smallestPosition - 1];
+                smallestPosition = smallestPosition - 1;
+            }
+            if (energyPlus[linha][smallestPosition + 1] < smallest && smallestPosition < targetW - 1)
+            {
+                smallest = energyPlus[linha][smallestPosition + 1];
+                smallestPosition = smallestPosition + 1;
+            }
+            smallestPathValue[linha] = smallest;
+            smallestPath[linha] = smallestPosition;
+        }
+    }
+
+    // while qual coluna tem que tirar, tira vai pra proxima linha, qual ter que tirar, puxa
+    //arrasta o pixel da direita para a esquerda
+
     // a partir daqui já estava no código
 
     RGB8(*ptr)
     [target->width] = (RGB8(*)[target->width])target->img;
 
+    int pSP = 0;
 
-    for (int y = 0; y < target->height; y++)
+    for (int y = target->height - 1; y >= 0; y--)
     {
-        for (int x = 0; x < targetW; x++)
+        //imprime a imagem na tela
+        
+        // ptr[y][smallestPath[pSP]].r = 255;
+        // ptr[y][smallestPath[pSP]].g = 0;
+        // ptr[y][smallestPath[pSP++]].b = 0;
+
+        for (int c = smallestPath[pSP]; c < targetWidth-1; c++)
         {
-            ptr[y][x].r = ptr3[y][x].r;
-            ptr[y][x].g = ptr3[y][x].g;
-            ptr[y][x].b = ptr3[y][x].b;
+            ptr[y][c].r = ptr[y][c + 1].r;
+            ptr[y][c].g = ptr[y][c + 1].g;
+            ptr[y][c].b = ptr[y][c + 1].b;
+            
         }
-        for (int x = targetW; x < target->width; x++)
-            ptr[y][x].r = ptr[y][x].g = ptr[y][x].b = 0;
+        pSP++;
+
+         for (int x = targetWidth; x < target->width; x++)
+         {
+             ptr[y][x].r = ptr[y][x].g = ptr[y][x].b = 0;
+         }
     }
     // Chame uploadTexture a cada vez que mudar
     // a imagem (pic[2])
@@ -322,13 +408,13 @@ void arrow_keys(int a_keys, int x, int y)
     switch (a_keys)
     {
     case GLUT_KEY_RIGHT:
-        if (targetW <= pic[2].width - 10)
-            targetW += 10;
+        if (targetW <= pic[2].width - 1)
+            targetW += 1;
         seamcarve(targetW);
         break;
     case GLUT_KEY_LEFT:
-        if (targetW > 10)
-            targetW -= 10;
+        if (targetW > 1)
+            targetW -= 1;
         seamcarve(targetW);
         break;
     default:
