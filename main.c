@@ -75,35 +75,35 @@ void load(char *name, Img *pic)
     printf("Load: %d x %d x %d\n", pic->width, pic->height, chan);
 }
 
-// Calcula o menor caminho
-int custoCaminho(int linha, int coluna, int custo, int rows, int columns, int energyPlus[rows][columns])
-{
-    int smallest;
-    int cSmallest;
+// Calcula o menor caminho -> não usamos
+// int custoCaminho(int linha, int coluna, int custo, int rows, int columns, int energyPlus[rows][columns])
+// {
+//     int smallest;
+//     int cSmallest;
 
-    if (linha > 0)
-    {
-        smallest = energyPlus[linha - 1][coluna];
-        cSmallest = coluna;
+//     if (linha > 0)
+//     {
+//         smallest = energyPlus[linha - 1][coluna];
+//         cSmallest = coluna;
 
-        if (coluna > 0) {
-           if (energyPlus[linha - 1][coluna - 1] < smallest)
-           {
-              smallest = energyPlus[linha - 1][coluna - 1];
-              cSmallest = coluna - 1;
-           }
-        }   
-        if (coluna < targetW - 1) {
-            if (energyPlus[linha - 1][coluna + 1] < smallest)
-            {
-                smallest = energyPlus[linha - 1][coluna + 1];
-                cSmallest = coluna + 1;
-            }
-        }    
-        return custoCaminho(linha - 1, cSmallest, custo + smallest, rows, columns, energyPlus);
-    }
-    return custo;
-}
+//         if (coluna > 0) {
+//            if (energyPlus[linha - 1][coluna - 1] < smallest)
+//            {
+//               smallest = energyPlus[linha - 1][coluna - 1];
+//               cSmallest = coluna - 1;
+//            }
+//         }   
+//         if (coluna < targetW - 1) {
+//             if (energyPlus[linha - 1][coluna + 1] < smallest)
+//             {
+//                 smallest = energyPlus[linha - 1][coluna + 1];
+//                 cSmallest = coluna + 1;
+//             }
+//         }    
+//         return custoCaminho(linha - 1, cSmallest, custo + smallest, rows, columns, energyPlus);
+//     }
+//     return custo;
+// }
 
 // Implemente AQUI o seu algoritmo
 void seamcarve(int targetWidth)
@@ -196,13 +196,8 @@ void seamcarve(int targetWidth)
             deltaY = deltaRy * deltaRy + deltaGy * deltaGy + deltaBy * deltaBy;
 
             energy[linha][coluna] = deltaX + deltaY;
-            //printf("%8d, ", energy[linha][coluna]);
         }
-        //printf("\n");
     }
-    //printf("\n");
-    // RGB8(*ptr4)
-    // [target->width] = (RGB8(*)[target->width])target->img;
 
     // Matriz com a energia acumulada
     int energyPlus[target->height][targetWidth];
@@ -227,12 +222,9 @@ void seamcarve(int targetWidth)
                 {
                     smallest = energyPlus[linha - 1][coluna + 1];
                 }
-                //printf(" smallest: %d", smallest);
                 energyPlus[linha][coluna] = energy[linha][coluna] + smallest;
             }
-           //printf("%8d, ", energyPlus[linha][coluna]);
         }
-       // printf("\n");
     }
 
     // Calcula o caminho com a menor energia
@@ -254,13 +246,13 @@ void seamcarve(int targetWidth)
     int colunaMenorCusto = 0;
     int pathCost = energyPlus[target->height-1][0];
     for (int x=1; x<targetWidth; x++)
+    {
         if (pathCost > energyPlus[target->height-1][x]) {
             pathCost = energyPlus[target->height-1][x];
             colunaMenorCusto = x;
         }
+    }
 
-    //printf("\n");
-    //printf("menorCusto %d colunaMenorCusto %d smallTest %d smallTestCost %d\n",menorCusto,colunaMenorCusto,smallTest,smallTestCost);
 
     // Encontra o menor caminho para ser removido
 
@@ -296,8 +288,6 @@ void seamcarve(int targetWidth)
     }
     smallestPath[p] = colunaMenorCusto;
 
-   //for (int i=0; i<target->height; i++) printf("%d ,",smallestPath[i]);
-   //printf("\n");
 
     // while qual coluna tem que tirar, tira vai pra proxima linha, qual ter que tirar, puxa
     //arrasta o pixel da direita para a esquerda
@@ -311,11 +301,6 @@ void seamcarve(int targetWidth)
 
     for (int y = target->height - 1; y >= 0; y--)
     {
-        //imprime a imagem na tela
-
-        // ptr[y][smallestPath[pSP]].r = 255;
-        // ptr[y][smallestPath[pSP]].g = 0;
-        // ptr[y][smallestPath[pSP++]].b = 0;
 
         for (int c = smallestPath[pSP]; c < targetWidth - 1; c++)
         {
@@ -330,6 +315,7 @@ void seamcarve(int targetWidth)
             ptr[y][x].r = ptr[y][x].g = ptr[y][x].b = 0;
         }
     }
+
     // Chame uploadTexture a cada vez que mudar
     // a imagem (pic[2])
     uploadTexture();
