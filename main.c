@@ -1,3 +1,10 @@
+/* 
+PROGRAMAÇÃO DE BAIXO NÍVEL - 128/138
+Trabalho 2 
+Gabriela Panta Zorzo 
+Morgana Weber 
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> // Para usar strings
@@ -75,7 +82,9 @@ void load(char *name, Img *pic)
     printf("Load: %d x %d x %d\n", pic->width, pic->height, chan);
 }
 
-// Calcula o menor caminho -> não usamos
+// Calcula o menor caminho -> não usamos pois optamos por usar o primeiro menor caminho 
+// da energia acumulada 
+
 // int custoCaminho(int linha, int coluna, int custo, int rows, int columns, int energyPlus[rows][columns])
 // {
 //     int smallest;
@@ -111,6 +120,8 @@ void seamcarve(int targetWidth)
     // Aplica o algoritmo e gera a saida em target->img...
     // RGB8 (*ptr1) = source;
     // RGB8 (*ptr2) = source;
+
+    // Ao entrar a primeira vez no código, copia a imagem (source) para a imagem de saída (target)
     static int firstTime = 0;
 
     if (firstTime == 0)
@@ -198,6 +209,26 @@ void seamcarve(int targetWidth)
             energy[linha][coluna] = deltaX + deltaY;
         }
     }
+    
+    // Utiliza a máscara para aumentar a energia dos pontos verdes
+    // e diminuir a energia dos pontos vermelhos
+    RGB8(*ptrM)
+    [mask->width] = (RGB8(*)[mask->width])mask->img;
+
+    for (int linha = 0; linha < target->height; linha++)
+    {
+        for (int coluna = 0; coluna < targetWidth; coluna++)
+        {
+            if(ptrM[linha][coluna].r >= 170){
+                if(ptrM[linha][coluna].b <= 30 && ptrM[linha][coluna].g <= 30){
+                    energy[linha][coluna] -= 800000;
+                }
+            }
+            else if(ptrM[linha][coluna].g >= 170){
+                energy[linha][coluna] += 400000;
+            }
+        }
+    }
 
     // Matriz com a energia acumulada
     int energyPlus[target->height][targetWidth];
@@ -227,9 +258,9 @@ void seamcarve(int targetWidth)
         }
     }
 
-    // Calcula o caminho com a menor energia
+    // Calcula o caminho com a menor energia -> seria utilizado para chamar o método custoCaminho
 
-    //int colunaMenorCusto = 0;
+    // int colunaMenorCusto = 0;
     // int menorCusto = custoCaminho(target->height - 1, 0, energyPlus[target->height - 1][0], target->height, targetWidth, energyPlus);
 
     // for (int coluna = 1; coluna < targetWidth; coluna++)
@@ -243,6 +274,7 @@ void seamcarve(int targetWidth)
     //     }
     // }
 
+    // Pega o menor valor da última linha da matriz de energia acumulada
     int colunaMenorCusto = 0;
     int pathCost = energyPlus[target->height-1][0];
     for (int x=1; x<targetWidth; x++)
@@ -252,7 +284,6 @@ void seamcarve(int targetWidth)
             colunaMenorCusto = x;
         }
     }
-
 
     // Encontra o menor caminho para ser removido
 
@@ -288,14 +319,13 @@ void seamcarve(int targetWidth)
     }
     smallestPath[p] = colunaMenorCusto;
 
-
-    // while qual coluna tem que tirar, tira vai pra proxima linha, qual ter que tirar, puxa
-    //arrasta o pixel da direita para a esquerda
-
-    // a partir daqui já estava no código
+    // Remove caminho com menor energia 
 
     RGB8(*ptr)
     [target->width] = (RGB8(*)[target->width])target->img;
+
+    RGB8(*ptrMask)
+    [mask->width] = (RGB8(*)[mask->width])mask->img;
 
     int pSP = 0;
 
@@ -307,6 +337,8 @@ void seamcarve(int targetWidth)
             ptr[y][c].r = ptr[y][c + 1].r;
             ptr[y][c].g = ptr[y][c + 1].g;
             ptr[y][c].b = ptr[y][c + 1].b;
+
+            ptrMask[y][c] = ptrMask[y][c + 1];
         }
         pSP++;
 
