@@ -237,29 +237,28 @@ void seamcarve(int targetWidth)
 
     // Calcula o caminho com a menor energia
 
-    int colunaMenorCusto = 0;
-    int menorCusto = custoCaminho(target->height - 1, 0, energyPlus[target->height - 1][0], target->height, targetWidth, energyPlus);
+    //int colunaMenorCusto = 0;
+    // int menorCusto = custoCaminho(target->height - 1, 0, energyPlus[target->height - 1][0], target->height, targetWidth, energyPlus);
 
-    for (int coluna = 1; coluna < targetWidth; coluna++)
-    {
-        int custo = custoCaminho(target->height - 1, coluna, energyPlus[target->height - 1][coluna], target->height, targetWidth, energyPlus);
+    // for (int coluna = 1; coluna < targetWidth; coluna++)
+    // {
+    //     int custo = custoCaminho(target->height - 1, coluna, energyPlus[target->height - 1][coluna], target->height, targetWidth, energyPlus);
 
-        if (custo < menorCusto)
-        {
-            menorCusto = custo;
-            colunaMenorCusto = coluna;
-        }
-    }
-
-    // int smallTest = 0;
-    // int smallTestCost = energyPlus[target->height-1][0];
-    // for (int x=1; x<targetWidth; x++)
-    //     if (smallTestCost > energyPlus[target->height-1][x]) {
-    //         smallTestCost = energyPlus[target->height-1][x];
-    //         smallTest = x;
+    //     if (custo < menorCusto)
+    //     {
+    //         menorCusto = custo;
+    //         colunaMenorCusto = coluna;
     //     }
+    // }
 
-   //colunaMenorCusto = smallTest;
+    int colunaMenorCusto = 0;
+    int pathCost = energyPlus[target->height-1][0];
+    for (int x=1; x<targetWidth; x++)
+        if (pathCost > energyPlus[target->height-1][x]) {
+            pathCost = energyPlus[target->height-1][x];
+            colunaMenorCusto = x;
+        }
+
     //printf("\n");
     //printf("menorCusto %d colunaMenorCusto %d smallTest %d smallTestCost %d\n",menorCusto,colunaMenorCusto,smallTest,smallTestCost);
 
